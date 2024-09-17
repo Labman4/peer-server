@@ -1,0 +1,28 @@
+{
+  "name": "peer-server",
+  "version": "1.0.0",
+  "main": "bin/server.js",
+  "scripts": {
+    "build": "pkg ."
+  },
+  "bin": {
+    "peer-server": "./bin/server.js"
+  },
+
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.0",
+    "peer": "^1.0.2",
+    "pkg": "^5.8.1"
+  },
+  "pkg": {
+    "targets": [
+      "node18-linux-x64",
+      "node18-macos-x64",
+      "node18-win-x64"
+    ]
+  }
+}
