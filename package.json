@@ -8,20 +8,20 @@
   "bin": {
     "peer-server": "./bin/server.js"
   },
-
   "keywords": [],
   "author": "",
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.0",
+    "mongodb": "^6.9.0",
     "peer": "^1.0.2",
+    "peer-server": "file:",
     "pkg": "^5.8.1"
   },
   "pkg": {
     "targets": [
-      "node18-linux-x64",
-      "node18-macos-x64",
       "node18-win-x64"
     ]
   }
