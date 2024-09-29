@@ -1,9 +1,20 @@
 #!/usr/bin/env node
 const cors = require('cors');
+const fs = require('fs');
+const os = require('os');
+const { PeerServer } = require('peer');
+const express = require('express');
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://woxiangqusia:Ieb8BOsQVN1pptIE@cluster0.mgwsb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const userHomeDir = os.homedir();
+let uri;
+
+try {
+  const data = fs.readFileSync(userHomeDir + '/.peer/db_config', 'utf8');
+  uri = data;
+} catch (err) {
+  console.error('Error reading file:', err);
+}
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -12,33 +23,28 @@ const client = new MongoClient(uri, {
   }
 });
 
-process.env.DEBUG = 'peer:*';
-
-const { PeerServer } = require('peer');
-const express = require('express');
-
 const app = express();
 app.use(cors());
 
 const port = 3000;
 
-let onlinePeers = new Set();
+try {
+  const ssl_path = fs.readFileSync(userHomeDir + '/.peer/ssl_config', 'utf8');
+} catch (err) {
+  console.error('Error reading file:', err);
+}
 
-const peerServer = PeerServer({ port: 9091, path: '/app' });
-
-peerServer.on('connection', (client) => {
-    const peerId = client.getId();
-    console.log(`Peer connected: ${peerId}`);
-    onlinePeers.add(peerId);
-});
-
-peerServer.on('disconnect', (client) => { 
-    const peerId = client.getId();
-    console.log(`Peer disconnected: ${peerId}`);
-    onlinePeers.delete(peerId);
-});
-
-
+const peerServer = PeerServer({ 
+  port: 9091, 
+  path: '/app', 
+  proxied: true, 
+  allow_discovery: true,
+  ssl: {
+		key: fs.readFileSync(ssl_path + ".key"),
+		cert: fs.readFileSync(ssl_path + ".crt"),
+	},
+  }
+);
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
@@ -52,10 +58,6 @@ async function connectToDatabase() {
     console.error('Error connecting to MongoDB:', error);
   }
 }
-
-app.get('/online', (req, res) => {
-  res.json(Array.from(onlinePeers));
-});
 
 // Create
 app.post('/peer', async (req, res) => {
