@@ -22,7 +22,8 @@
   },
   "pkg": {
     "targets": [
-      "node18-win-x64"
+      "node18-mac",
+      "node18-linux-x64"
     ]
   }
 }

@@ -12,6 +12,8 @@ const client = new MongoClient(uri, {
   }
 });
 
+process.env.DEBUG = 'peer:*';
+
 const { PeerServer } = require('peer');
 const express = require('express');
 
@@ -60,7 +62,7 @@ app.post('/peer', async (req, res) => {
   try {
     const collection = await connectToDatabase();
     const { username, peerId } = req.body;
-    
+    console.log(peerId);
     // Upsert the document (insert if not exists, update if exists)
     const result = await collection.updateOne(
       { username: username },
@@ -70,7 +72,7 @@ app.post('/peer', async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.error('Error creating/updating mapping:', error);
-    res.status(500).send('Error creating/updating mapping');
+    res.status(500).send('');
   }
 });
 
@@ -86,11 +88,11 @@ app.get('/user/:username', async (req, res) => {
       res.json(mapping);
       console.log(mapping)
     } else {
-      res.status(404).send('Mapping not found');
+      res.status(404).send('');
     }
   } catch (error) {
     console.error('Error retrieving mapping:', error);
-    res.status(500).send('Error retrieving mapping');
+    res.status(500).send('');
   }
 });
 
@@ -108,7 +110,7 @@ app.get('/peer/:id', async (req, res) => {
     }
   } catch (error) {
     console.error('Error getting item:', error);
-    res.status(500).send('Error getting item');
+    res.status(500).send('');
   }
 });
 
@@ -141,7 +143,7 @@ app.post('/peer/update', async (req, res) => {
     }
   } catch (error) {
     console.error('Error updating peerId:', error);
-    res.status(500).send('Error updating peerId');
+    res.status(500).send('');
   }
 });
 
@@ -154,11 +156,11 @@ app.delete('/user/:username', async (req, res) => {
     if (result.deletedCount === 1) {
       res.status(200).send('Mapping deleted');
     } else {
-      res.status(404).send('Mapping not found');
+      res.status(404).send('');
     }
   } catch (error) {
     console.error('Error deleting mapping:', error);
-    res.status(500).send('Error deleting mapping');
+    res.status(500).send('');
   }
 });
 
