@@ -28,23 +28,12 @@ app.use(cors());
 
 const port = 3000;
 
-try {
-  const ssl_path = fs.readFileSync(userHomeDir + '/.peer/ssl_config', 'utf8');
-} catch (err) {
-  console.error('Error reading file:', err);
-}
-
 const peerServer = PeerServer({ 
   port: 9091, 
   path: '/app', 
   proxied: true, 
   allow_discovery: true,
-  ssl: {
-		key: fs.readFileSync(ssl_path + ".key"),
-		cert: fs.readFileSync(ssl_path + ".crt"),
-	},
-  }
-);
+});
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
